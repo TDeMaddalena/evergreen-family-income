@@ -1,0 +1,212 @@
+ticker,name,sector,country,index_weight_pct
+ASML.AS,Asml Holding,Information Technology,Netherlands,7.04
+SAP.DE,Sap,Information Technology,Germany,3.08
+SIE.DE,Siemens N Ag,Industrials,Germany,2.84
+ALV.DE,Allianz,Financials,Germany,2.76
+TTE.PA,Totalenergies,Energy,France,2.4
+SAN.MC,Banco Santander,Financials,Spain,2.29
+IBE.MC,Iberdrola,Utilities,Spain,2.26
+SU.PA,Schneider Electric,Industrials,France,1.91
+BBVA.MC,Banco Bilbao Vizcaya Argentaria,Financials,Spain,1.9
+AI.PA,Lair Liquide Societe Anonyme Pour,Materials,France,1.88
+AIR.PA,Airbus Group,Industrials,France,1.81
+SAN.PA,Sanofi Sa,Health Care,France,1.71
+OR.PA,Loreal Sa,Consumer Staples,France,1.7
+SAF.PA,Safran Sa,Industrials,France,1.61
+UCG.MI,Unicredit,Financials,Italy,1.59
+MC.PA,Lvmh,Consumer Discretionary,France,1.55
+DTE.DE,Deutsche Telekom N Ag,Communication Services,Germany,1.46
+BNP.PA,Bnp Paribas Sa,Financials,France,1.4
+ENR.DE,Siemens Energy N Ag,Industrials,Germany,1.4
+ISP.MI,Intesa Sanpaolo,Financials,Italy,1.25
+INGA.AS,Ing Groep,Financials,Netherlands,1.22
+MUV2.DE,Muenchener Rueckversicherungs-Gese,Financials,Germany,1.19
+ENEL.MI,Enel,Utilities,Italy,1.15
+CS.PA,Axa Sa,Financials,France,1.13
+ABI.BR,Anheuser-Busch Inbev Sa,Consumer Staples,Belgium,1.05
+ITX.MC,Industria De Diseno Textil Sa,Consumer Discretionary,Spain,1.01
+DB1.DE,Deutsche Boerse Ag,Financials,Germany,0.91
+ARGX.BR,Argenx,Health Care,Belgium,0.87
+IFX.DE,Infineon Technologies Ag,Information Technology,Germany,0.86
+DG.PA,Vinci Sa,Industrials,France,0.85
+DHL.DE,Dhl Ag,Industrials,Germany,0.83
+EL.PA,Essilorluxottica Sa,Health Care,France,0.8
+DBK.DE,Deutsche Bank Ag,Financials,Germany,0.8
+BAYN.DE,Bayer Ag,Health Care,Germany,0.8
+NDA-FI.HE,Nordea Bank,Financials,Finland,0.77
+RACE.MI,Ferrari,Consumer Discretionary,Italy,0.71
+BN.PA,Danone Sa,Consumer Staples,France,0.7
+ENGI.PA,Engie Sa,Utilities,France,0.69
+ENI.MI,Eni,Energy,Italy,0.69
+RMS.PA,Hermes International,Consumer Discretionary,France,0.69
+BAS.DE,Basf N,Materials,Germany,0.69
+EOAN.DE,E.On N,Utilities,Germany,0.67
+GLE.PA,Societe Generale Sa,Financials,France,0.62
+CABK.MC,Caixabank Sa,Financials,Spain,0.61
+RWE.DE,Rwe Ag,Utilities,Germany,0.57
+PRX.AS,Prosus Nv Class N,Consumer Discretionary,Netherlands,0.57
+UCB.BR,Ucb Sa,Health Care,Belgium,0.56
+RHM.DE,Rheinmetall Ag,Industrials,Germany,0.55
+SGO.PA,Compagnie De Saint Gobain Sa,Industrials,France,0.52
+EBS.VI,Erste Group Bank Ag,Financials,Austria,0.52
+NOKIA.HE,Nokia,Information Technology,Finland,0.51
+AD.AS,Koninklijke Ahold Delhaize,Consumer Staples,Netherlands,0.5
+G.MI,Assicurazioni Generali,Financials,Italy,0.5
+LR.PA,Legrand Sa,Industrials,France,0.5
+REP.MC,Repsol,Energy,Spain,0.49
+ORA.PA,Orange Sa,Communication Services,France,0.45
+ADS.DE,Adidas N Ag,Consumer Discretionary,Germany,0.44
+ASM.AS,Asm International Nv,Information Technology,Netherlands,0.44
+PRY.MI,Prysmian,Industrials,Italy,0.42
+AMS.MC,Amadeus It Group,Consumer Discretionary,Spain,0.42
+MBG.DE,Mercedes-Benz Group N Ag,Consumer Discretionary,Germany,0.4
+FER.MC,Ferrovial Nv,Industrials,Spain,0.4
+KBC.BR,Kbc Groep,Financials,Belgium,0.39
+HEI.DE,Heidelberg Materials Ag,Materials,Germany,0.39
+SAMPO.HE,Sampo Class A,Financials,Finland,0.38
+PUB.PA,Publicis Groupe,Communication Services,France,0.37
+ABN.AS,Abn Amro Bank Nv,Financials,Netherlands,0.37
+ADYEN.AS,Adyen,Financials,Netherlands,0.36
+HEIA.AS,Heineken Nv,Consumer Staples,Netherlands,0.36
+FRE.DE,Fresenius N,Health Care,Germany,0.36
+STMPA.PA,Stmicroelectronics,Information Technology,France,0.35
+CCEP.AS,Coca Cola Europacific Partners Plc,Consumer Staples,Netherlands,0.34
+A5G.IR,Aib Group Plc,Financials,Ireland,0.34
+MT.AS,Arcelormittal Sa,Materials,France,0.34
+HO.PA,Thales Sa,Industrials,France,0.34
+AENA.MC,Aena Sme Sa,Industrials,Spain,0.34
+PHIA.AS,Koninklijke Philips,Health Care,Netherlands,0.33
+VIE.PA,Veolia Environ. Sa,Utilities,France,0.33
+CBK.DE,Commerzbank Ag,Financials,Germany,0.33
+NN.AS,Nn Group,Financials,Netherlands,0.32
+BMPS.MI,Banca Monte Dei Paschi Di Siena Sp,Financials,Italy,0.31
+WKL.AS,Wolters Kluwer,Industrials,Netherlands,0.31
+LDO.MI,Leonardo Finmeccanica Spa,Industrials,Italy,0.31
+ML.PA,Michelin,Consumer Discretionary,France,0.31
+DTG.DE,Daimler Truck Holding E Ag,Industrials,Germany,0.3
+MRK.DE,Merck,Health Care,Germany,0.3
+CAP.PA,Capgemini,Information Technology,France,0.3
+MTX.DE,Mtu Aero Engines Holding Ag,Industrials,Germany,0.29
+KNEBV.HE,Kone,Industrials,Finland,0.29
+UMG.AS,Universal Music Group,Communication Services,Netherlands,0.28
+HNR1.DE,Hannover Rueck,Financials,Germany,0.28
+BMW.DE,Bmw,Consumer Discretionary,Germany,0.28
+PST.MI,Poste Italiane,Financials,Italy,0.28
+DSFIR.AS,Dsm Firmenich Ag,Materials,Netherlands,0.28
+BIRG.IR,Bank Of Ireland Group Plc,Financials,Ireland,0.27
+KPN.AS,Koninklijke Kpn Nv,Communication Services,Netherlands,0.26
+KRZ.IR,Kerry Group Plc,Consumer Staples,Ireland,0.26
+BPE.MI,Bper Banca,Financials,Italy,0.26
+SAB.MC,Banco De Sabadell,Financials,Spain,0.25
+DSY.PA,Dassault Systemes,Information Technology,France,0.24
+EDP.LS,Edp Energias De Portugal,Utilities,Portugal,0.23
+ACS.MC,Acs Actividades De Construccion Y,Industrials,Spain,0.23
+SHL.DE,Siemens Healthineers Ag,Health Care,Germany,0.23
+ACA.PA,Credit Agricole Sa,Financials,France,0.22
+RI.PA,Pernod Ricard Sa,Consumer Staples,France,0.22
+VOW3.DE,Volkswagen Non-Voting Pref Ag,Consumer Discretionary,Germany,0.22
+ELE.MC,Endesa Sa,Utilities,Spain,0.22
+HEN3.DE,Henkel & Kgaa Pref Ag,Consumer Staples,Germany,0.22
+KRX.IR,Kingspan Group Plc,Industrials,Ireland,0.21
+ENX.PA,Euronext Nv,Financials,France,0.21
+TRN.MI,Terna Rete Elettrica Nazionale,Utilities,Italy,0.21
+BAMI.MI,Banco Bpm,Financials,Italy,0.21
+SY1.DE,Symrise Ag,Materials,Germany,0.2
+FBK.MI,Finecobank Banca Fineco,Financials,Italy,0.2
+VNA.DE,Vonovia Se,Real Estate,Germany,0.2
+KER.PA,Kering Sa,Consumer Discretionary,France,0.2
+NTGY.MC,Naturgy Energy Group Sa,Utilities,Spain,0.2
+TEF.MC,Telefonica Sa,Communication Services,Spain,0.2
+CLNX.MC,Cellnex Telecom,Communication Services,Spain,0.2
+SRG.MI,Snam,Utilities,Italy,0.2
+ASRNL.AS,Asr Nederland,Financials,Netherlands,0.19
+ORNBV.HE,Orion Class B,Health Care,Finland,0.18
+WRT1V.HE,Wartsila,Industrials,Finland,0.18
+UPM.HE,Upm-Kymmene,Materials,Finland,0.18
+BG.VI,Bawag Group Ag,Financials,Austria,0.18
+AGS.BR,Ageas,Financials,Belgium,0.18
+RYA.IR,Ryanair Holdings Plc,Industrials,Ireland,0.17
+G1A.DE,Gea Group Ag,Industrials,Germany,0.16
+BVI.PA,Bureau Veritas Sa,Industrials,France,0.16
+NESTE.HE,Neste,Energy,Finland,0.16
+UNI.MI,Unipol Assicurazioni Spa,Financials,Italy,0.16
+HEIO.AS,Heineken Holding Nv,Consumer Staples,Netherlands,0.16
+OMV.VI,Omv,Energy,Austria,0.16
+FORTUM.HE,Fortum,Utilities,Finland,0.16
+URW.PA,Unibail Rodamco We Stapled Units,Real Estate,France,0.16
+AKZA.AS,Akzo Nobel Nv,Materials,Netherlands,0.15
+EN.PA,Bouygues Sa,Industrials,France,0.15
+ERF.PA,Eurofins Scientific,Health Care,France,0.15
+QIA.DE,Qiagen,Health Care,Germany,0.15
+AC.PA,Accor Sa,Consumer Discretionary,France,0.15
+BESI.AS,Be Semiconductor Industries Nv,Information Technology,Netherlands,0.15
+AGN.AS,Aegon,Financials,Netherlands,0.15
+METSO.HE,Metso Corporation,Industrials,Finland,0.15
+MONC.MI,Moncler,Consumer Discretionary,Italy,0.14
+MICC.AS,Magnum Ice Cream,Consumer Staples,Netherlands,0.14
+BKT.MC,Bankinter,Financials,Spain,0.14
+LI.PA,Klepierre Reit Sa,Real Estate,France,0.13
+CA.PA,Carrefour Sa,Consumer Staples,France,0.13
+BCP.LS,Banco Comercial Portugues Sa,Financials,Portugal,0.13
+TLX.DE,Talanx Ag,Financials,Germany,0.13
+TEN.MI,Tenaris Sa,Energy,Italy,0.12
+CON.DE,Continental Ag,Consumer Discretionary,Germany,0.12
+FGR.PA,Eiffage Sa,Industrials,France,0.12
+BEI.DE,Beiersdorf Ag,Consumer Staples,Germany,0.12
+SRT3.DE,Sartorius Pref Ag,Health Care,Germany,0.12
+RBI.VI,Raiffeisen Bank International Ag,Financials,Austria,0.12
+FME.DE,Fresenius Medical Care Ag,Health Care,Germany,0.11
+HEN.DE,Henkel Ag,Consumer Staples,Germany,0.11
+GALP.LS,Galp Energia Sgps Sa Class B,Energy,Portugal,0.11
+RXL.PA,Rexel Sa,Industrials,France,0.11
+STLAM.MI,Stellantis,Consumer Discretionary,Italy,0.11
+DIM.PA,Sartorius Stedim Biotech Sa,Health Care,France,0.11
+KESKOB.HE,Kesko Corp Class B,Consumer Staples,Finland,0.1
+BNR.DE,Brenntag,Industrials,Germany,0.1
+EXO.AS,Exor Nv,Financials,Netherlands,0.1
+ELI.BR,Elia Group Sa,Utilities,Belgium,0.1
+ZAL.DE,Zalando,Consumer Discretionary,Germany,0.1
+IAG.MC,International Airlines Group,Industrials,Spain,0.09
+KBX.DE,Knorr Bremse Ag,Industrials,Germany,0.09
+LOTB.BR,Lotus Bakeries Nv,Consumer Staples,Belgium,0.09
+IG.MI,Italgas,Utilities,Italy,0.09
+GBLB.BR,Groupe Bruxelles Lambert Nv,Financials,Belgium,0.09
+IPN.PA,Ipsen Sa,Health Care,France,0.09
+AMUN.PA,Amundi Sa,Financials,France,0.09
+JMT.LS,Jeronimo Martins Sa,Consumer Staples,Portugal,0.09
+LHA.DE,Deutsche Lufthansa Ag,Industrials,Germany,0.08
+IDR.MC,Indra Sistemas Sa,Information Technology,Spain,0.08
+SYENS.BR,Syensqo Nv,Materials,Belgium,0.08
+DHER.DE,Delivery Hero V,Consumer Discretionary,Germany,0.08
+SW.PA,Sodexo Sa,Consumer Discretionary,France,0.08
+P911.DE,Dr Ing Hc F Porsche Prf Ag,Consumer Discretionary,Germany,0.08
+GET.PA,Getlink,Industrials,France,0.08
+AM.PA,Dassault Aviation Sa,Industrials,France,0.08
+STERV.HE,Stora Enso Class R,Materials,Finland,0.08
+RNO.PA,Renault Sa,Consumer Discretionary,France,0.08
+EVK.DE,Evonik Industries Ag,Materials,Germany,0.08
+VER.VI,Verbund Ag,Utilities,Austria,0.08
+HOT.DE,Hochtief Ag,Industrials,Germany,0.08
+ABVX.PA,Abivax Sa,Health Care,France,0.08
+ELISA.HE,Elisa,Communication Services,Finland,0.07
+ANA.MC,Acciona,Utilities,Spain,0.07
+HAG.DE,Hensoldt Ag,Industrials,Germany,0.07
+TUB.BR,Financiere De Tubize Sa,Health Care,Belgium,0.07
+BMED.MI,Banca Mediolanum,Financials,Italy,0.07
+EDPR.LS,Edp Renewables Sa,Utilities,Portugal,0.07
+SOF.BR,Sofina Sa,Financials,Belgium,0.07
+MAP.MC,Mapfre Sa,Financials,Spain,0.06
+ADP.PA,Aeroports De Paris Sa,Industrials,France,0.06
+CPR.MI,Davide Campari Milano Nv,Consumer Staples,Italy,0.06
+RED.MC,Redeia Corporacion Sa,Utilities,Spain,0.06
+PAH3.DE,Porsche Automobil Holding Pref,Consumer Discretionary,Germany,0.06
+DIE.BR,Dieteren (D) Sa,Consumer Discretionary,Belgium,0.06
+BIM.PA,Biomerieux Sa,Health Care,France,0.06
+NEM.DE,Nemetschek,Information Technology,Germany,0.05
+CVC.AS,Cvc Capital Partners Plc,Financials,Netherlands,0.05
+BZU.MI,Buzzi,Materials,Italy,0.05
+AYV.PA,Ayvens Sa,Industrials,France,0.05
+RAA.DE,Rational Ag,Industrials,Germany,0.05
+ALO.PA,Alstom Sa,Industrials,France,0.05
+GFC.PA,Gecina Sa,Real Estate,France,0.04
+COV.PA,Covivio Sa,Real Estate,France,0.03
