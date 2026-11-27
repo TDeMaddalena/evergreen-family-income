@@ -302,7 +302,7 @@ def interpretation(a, b, rel):
 # ---------------------------------------------------------------------------------------------
 with tabs[0]:
     a, b = ABS['Your scenario'], ABS[TWIN]
-    key = pd.DataFrame({'Your scenario': a, TWIN: b, 'Difference': a - b})
+    key = pd.DataFrame({'Your scenario': a, TWIN: b, 'Difference vs index funds': a - b})
     if not IS_BASE:
         key.insert(1, 'Base case', ABS['Base case'])
     st.subheader('Six measures vs. the same weights in index funds')
@@ -346,9 +346,11 @@ with tabs[1]:
     if not IS_BASE:
         who['Base case'] = BSIMS['Your scenario']
     who.update({k: SIMS[k] for k in [TWIN, '60/40 World / Govt bonds', 'Same weights, dividend ETF']})
-    CLIENT, INCOME, REAL = {}, {}, {}
+    CLIENT, PAID, REAL = {}, {}, {}
     for k, sim in who.items():
-        CLIENT[k], INCOME[k], REAL[k] = dc.client_stats(sim, cpi, ad.W0)
+        CLIENT[k], inc_k, REAL[k] = dc.client_stats(sim, cpi, ad.W0)
+        # what the family actually received per full calendar year (= income under "All income")
+        PAID[k] = sim['payout'].iloc[1:].groupby(sim.index[1:].year).sum().reindex(inc_k.index)
     ct = pd.DataFrame(CLIENT)
     ct.loc['Worst 12-month return'] = ABS.loc['Worst 12-month return', ct.columns]
     showt = ct.astype(object)
@@ -356,15 +358,19 @@ with tabs[1]:
         showt.loc[r] = [f'{v * scale:,.0f}' if '(EUR)' in r else (f'{v:.2f}x' if '(x' in r else
                         (f'{v:.0f}' if r.startswith('Years') else f'{v:.2%}')) for v in ct.loc[r]]
 
-    inc = pd.DataFrame(INCOME) * scale
+    inc = pd.DataFrame(PAID) * scale
     e = inc['Your scenario']
+    drop = e.pct_change().min()
     m = st.columns(4)
-    m[0].metric('Average income per year', f'€{e.mean():,.0f}')
-    m[1].metric('Weakest income year', f'€{e.min():,.0f}')
-    m[2].metric('Largest yearly income drop', f'{e.pct_change().min():.1%}')
+    m[0].metric('Paid out per year (avg.)', f'€{e.mean():,.0f}')
+    m[1].metric('Weakest year paid out', f'€{e.min():,.0f}')
+    m[2].metric('Largest yearly drop in payout', f'{drop:.1%}' if drop < 0 else 'no drop')
     m[3].metric('Real wealth at the end', f'{CLIENT["Your scenario"]["End value, real (x start)"]:.2f}x start')
 
     st.dataframe(showt, width='stretch')
+    if P['payout'] == 'Smoothed':
+        st.caption('With the smoothed rule, the income rows in this table show the dividends and coupons the '
+                   'portfolio received; the metrics above and the chart below show what was paid to the family.')
     worst = ABS.at['Worst 12-month return', 'Your scenario']
     (st.success if worst >= -0.105 else st.warning)(
         f'Risk budget: the prospectus plans for a 1-in-20 bad year of about −10%. The worst 12-month return of your '
@@ -372,7 +378,7 @@ with tabs[1]:
 
     c1, c2 = st.columns(2)
     with c1:
-        st.markdown(f'**Income paid out per year** (EUR, on €{w0 / 1e6:,.0f} m)')
+        st.markdown(f'**Paid out to the family per year** (EUR, on €{w0 / 1e6:,.0f} m)')
         ib = inc[[k for k in inc if k != '60/40 World / Govt bonds']].reset_index(names='Year').melt('Year', var_name='Portfolio', value_name='EUR')
         dom = [k for k in COLORS if k in ib['Portfolio'].unique()]
         st.altair_chart(alt.Chart(ib).mark_bar().encode(
@@ -393,7 +399,7 @@ with tabs[1]:
         cal = (1 + R_ALL).groupby(R_ALL.index.year).prod() - 1
         inc_chg = inc.pct_change()
         stress = pd.concat({'Total return': cal.loc[[2020, 2022], inc.columns],
-                            'Income change vs. prior year': inc_chg.reindex([2020, 2021, 2022])})
+                            'Payout change vs. prior year': inc_chg.reindex([2020, 2021, 2022])})
         stress.index = [f'{a} {b}' for a, b in stress.index]
         st.dataframe(stress.style.format('{:+.1%}', na_rep='–'), width='stretch')
         st.caption('2020: Covid – the ECB asked banks to suspend dividends and many firms cut. '
@@ -476,14 +482,16 @@ with tabs[2]:
     us_eff = W['US'] * (u['CAGR'] - u['Benchmark CAGR'])
     ez_eff = W['EZ'] * (z['CAGR'] - z['Benchmark CAGR'])
     why = (f"the gap reflects {us.split(' vs ')[0]}'s lower market exposure (beta {u['Beta']:.2f}), "
-           f"not poor fund selection" if abs(u['t(alpha)']) < 2 and u['Beta'] < 1 else
+           f"not poor fund selection" if abs(u['t(alpha)']) < 2 and u['Beta'] < 1
+           and u['CAGR'] < u['Benchmark CAGR'] else
            f"alpha {u['Alpha (ann.)']:+.1%} (t = {u['t(alpha)']:.1f})")
     st.markdown(f"**US sleeve:** {us.split(' vs ')[0]} returned {u['CAGR']:.1%} a year vs {u['Benchmark CAGR']:.1%} "
                 f"for the S&P 500. Alpha ≈ {u['Alpha (ann.)']:+.1%} (t = {u['t(alpha)']:.1f}); {why}. "
                 f"With {W['US']:.0%} in US and {W['EZ']:.0%} in Eurozone stocks, the US choice "
                 f"{'added' if us_eff >= 0 else 'cost'} the portfolio about {abs(us_eff) * 100:.1f} pp a year, while our "
                 f"Eurozone rule {'added' if ez_eff >= 0 else 'cost'} about {abs(ez_eff) * 100:.1f} pp vs the EURO STOXX 50 "
-                f"(rough: weight × sleeve gap).")
+                f"(rough: weight × sleeve gap)."
+                + (" The S&P 500 is not hedged, so part of this gap is currency." if P['hedge'] else ''))
     with st.expander('Show all measures'):
         st.dataframe(fmt(ATT), width='stretch')
         st.caption('CAGR, Volatility and Sharpe ratio are those of the tested sleeve; Benchmark CAGR is the alternative\'s.')
@@ -501,7 +509,8 @@ quarter-ends. All income is paid out to the family; capital is never sold to fun
 
 **Benchmarks.** *Same weights, index funds*: your weights with the EURO STOXX 50 and S&P 500 in the stock sleeves.
 *Same weights, dividend ETF*: the same with the Select Dividend 30 for Eurozone stocks.
-*Same weights, equal-weight universe*: every stock in our universe equally weighted (measures survivorship bias).
+*Same weights, equal-weight universe*: your portfolio with every stock in our universe equally weighted in the
+Eurozone sleeve instead of our rule; US, bonds and gold unchanged (measures survivorship bias).
 *60/40 World / Govt bonds*: 60% MSCI World, 40% euro government bonds.
 """)
 
