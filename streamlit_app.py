@@ -453,7 +453,25 @@ with tabs[2]:
                 'so the effect of our stock rule is not mixed up with the choice of the US fund.')
     with st.spinner('Testing each sleeve on its own…'):
         ATT = attribution(P_JSON)
-    st.dataframe(fmt(ATT), width='stretch')
+    summ = pd.DataFrame({
+        'Tested (CAGR)': ATT.loc['CAGR'],
+        'Alternative (CAGR)': ATT.loc['Benchmark CAGR'],
+        'Difference': ATT.loc['CAGR'] - ATT.loc['Benchmark CAGR'],
+        'Alpha (ann.)': ATT.loc['Alpha (ann.)'],
+        't(alpha)': ATT.loc['t(alpha)'],
+        'Significant?': ['Yes' if abs(t) >= 2 else 'No' for t in ATT.loc['t(alpha)']],
+    })
+    summ.index = [c.replace('our rule', 'Our rule') for c in summ.index]
+    summ.index.name = 'Tested vs alternative'
+    st.dataframe(summ.style.format({'Tested (CAGR)': '{:.2%}', 'Alternative (CAGR)': '{:.2%}',
+                                    'Difference': '{:+.2%}', 'Alpha (ann.)': '{:+.2%}', 't(alpha)': '{:.2f}'}),
+                 width='stretch')
+    st.caption('Tested = the left side of each row (our stock rule, or SPYD for the US sleeve). '
+               'Alpha = yearly return not explained by moving with the alternative; '
+               'significant means |t| ≥ 2, i.e. unlikely to be luck.')
+    with st.expander('Show all measures'):
+        st.dataframe(fmt(ATT), width='stretch')
+        st.caption('CAGR, Volatility and Sharpe ratio are those of the tested sleeve; Benchmark CAGR is the alternative\'s.')
     st.caption('If our rule beats the EURO STOXX 50 and Select Dividend 30 but not the equal-weight universe, '
                'the edge may come from survivorship bias in today\'s constituent list rather than from the rule.')
 
