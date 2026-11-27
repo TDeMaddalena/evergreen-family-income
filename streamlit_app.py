@@ -453,22 +453,37 @@ with tabs[2]:
                 'so the effect of our stock rule is not mixed up with the choice of the US fund.')
     with st.spinner('Testing each sleeve on its own…'):
         ATT = attribution(P_JSON)
+    eu = [c for c in ATT.columns if c.startswith('our rule')]
+    us = [c for c in ATT.columns if c not in eu][0]
+    E = ATT[eu]
     summ = pd.DataFrame({
-        'Tested (CAGR)': ATT.loc['CAGR'],
-        'Alternative (CAGR)': ATT.loc['Benchmark CAGR'],
-        'Difference': ATT.loc['CAGR'] - ATT.loc['Benchmark CAGR'],
-        'Alpha (ann.)': ATT.loc['Alpha (ann.)'],
-        't(alpha)': ATT.loc['t(alpha)'],
-        'Significant?': ['Yes' if abs(t) >= 2 else 'No' for t in ATT.loc['t(alpha)']],
+        'Our rule (CAGR)': E.loc['CAGR'],
+        'Alternative (CAGR)': E.loc['Benchmark CAGR'],
+        'Difference': E.loc['CAGR'] - E.loc['Benchmark CAGR'],
+        'Alpha (ann.)': E.loc['Alpha (ann.)'],
+        't(alpha)': E.loc['t(alpha)'],
+        'Significant?': ['Yes' if abs(t) >= 2 else 'No' for t in E.loc['t(alpha)']],
     })
-    summ.index = [c.replace('our rule', 'Our rule') for c in summ.index]
-    summ.index.name = 'Tested vs alternative'
-    st.dataframe(summ.style.format({'Tested (CAGR)': '{:.2%}', 'Alternative (CAGR)': '{:.2%}',
+    summ.index = [c.replace('our rule vs ', '') for c in summ.index]
+    summ.index.name = 'Our Eurozone rule vs'
+    st.dataframe(summ.style.format({'Our rule (CAGR)': '{:.2%}', 'Alternative (CAGR)': '{:.2%}',
                                     'Difference': '{:+.2%}', 'Alpha (ann.)': '{:+.2%}', 't(alpha)': '{:.2f}'}),
                  width='stretch')
-    st.caption('Tested = the left side of each row (our stock rule, or SPYD for the US sleeve). '
-               'Alpha = yearly return not explained by moving with the alternative; '
+    st.caption('Alpha = yearly return not explained by moving with the alternative; '
                'significant means |t| ≥ 2, i.e. unlikely to be luck.')
+
+    u, z = ATT[us], ATT[eu[0]]
+    us_eff = W['US'] * (u['CAGR'] - u['Benchmark CAGR'])
+    ez_eff = W['EZ'] * (z['CAGR'] - z['Benchmark CAGR'])
+    why = (f"the gap reflects {us.split(' vs ')[0]}'s lower market exposure (beta {u['Beta']:.2f}), "
+           f"not poor fund selection" if abs(u['t(alpha)']) < 2 and u['Beta'] < 1 else
+           f"alpha {u['Alpha (ann.)']:+.1%} (t = {u['t(alpha)']:.1f})")
+    st.markdown(f"**US sleeve:** {us.split(' vs ')[0]} returned {u['CAGR']:.1%} a year vs {u['Benchmark CAGR']:.1%} "
+                f"for the S&P 500. Alpha ≈ {u['Alpha (ann.)']:+.1%} (t = {u['t(alpha)']:.1f}); {why}. "
+                f"With {W['US']:.0%} in US and {W['EZ']:.0%} in Eurozone stocks, the US choice "
+                f"{'added' if us_eff >= 0 else 'cost'} the portfolio about {abs(us_eff) * 100:.1f} pp a year, while our "
+                f"Eurozone rule {'added' if ez_eff >= 0 else 'cost'} about {abs(ez_eff) * 100:.1f} pp vs the EURO STOXX 50 "
+                f"(rough: weight × sleeve gap).")
     with st.expander('Show all measures'):
         st.dataframe(fmt(ATT), width='stretch')
         st.caption('CAGR, Volatility and Sharpe ratio are those of the tested sleeve; Benchmark CAGR is the alternative\'s.')
