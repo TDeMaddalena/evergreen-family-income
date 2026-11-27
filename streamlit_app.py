@@ -20,9 +20,9 @@ import evergreen_core as dc
 st.set_page_config(page_title='Evergreen Family Income', page_icon='🌲', layout='wide')
 
 NAVY, GOLD, GREY, TEAL, RED, SAND = '#0B3C5D', '#C9A227', '#9AA5B1', '#328CC1', '#B23A48', '#E2B55E'
-COLORS = {'Your scenario': NAVY, 'Base case': GOLD, 'Same weights, index funds': SAND, '60/40 World / Govt bonds': GREY,
-          'Same weights, dividend ETF': TEAL, 'Same weights, equal-weight universe': RED}
-BENCH = ['Same weights, index funds', '60/40 World / Govt bonds', 'Same weights, dividend ETF', 'Same weights, equal-weight universe']
+COLORS = {'Your scenario': NAVY, 'Base case': GOLD, 'B1 Policy twin': SAND, 'B2 60/40': GREY,
+          'B3 Dividend ETF': TEAL, '1/N diagnostic': RED}
+BENCH = ['B1 Policy twin', 'B2 60/40', 'B3 Dividend ETF', '1/N diagnostic']
 SLEEVE_NAMES = {'EZ': 'Eurozone stocks (our rule)', 'US': 'US dividend stocks (SPYD)',
                 'GOV': 'Euro government bonds', 'CORP': 'Euro corporate bonds', 'GOLD': 'Gold'}
 CUSTOM = ['EZ', 'US', 'GOV', 'CORP', 'GOLD']
@@ -69,7 +69,7 @@ def rule_from(p):
 def cfg_from(D, p):
     b = p['band'] / 100
     return ad.full_cfg(D, band_months=(3, 6, 9) if p['bands_on'] else (),
-                       bands={'EQ': b, 'BOND': b, 'GOLD': b * 0.4},      # base: 5% / 5% / 2%
+                       bands={'EQ': b, 'BOND': b, 'GOLD': round(b * 0.4, 6)},   # base: 5% / 5% / 2%
                        cost_mult=p['cost_mult'],
                        payout='income' if p['payout'] == 'All income' else 'smoothed',
                        payout_rate=p['payout_rate'] / 100, smooth_months=p['smooth_months'])
@@ -84,7 +84,7 @@ def selection(rule_json):
 @st.cache_data(show_spinner=False, max_entries=20)
 def backtest(p_json):
     """Notebook section 7 for one set of assumptions: Evergreen ('Your scenario') and the benchmarks.
-    The "Same weights" benchmarks use the scenario's weights, so they differ from it only in the stock sleeves."""
+    B1, B3 and 1/N use the scenario's weights, so they differ from it only in the stock sleeves."""
     p = json.loads(p_json)
     D, T = market_data(), market_data()['T']
     W, cfg = weights_from(p), cfg_from(D, p)
@@ -94,10 +94,10 @@ def backtest(p_json):
     us = 'US_HEDGED' if p['hedge'] else T['US']
     f, s = ad.fixed, ad.sleeve
     specs = {'Your scenario': ad.five_sleeves(T, W, ez_rule, us),
-             'Same weights, index funds': ad.five_sleeves(T, W, f(T['EZ_ETF']), T['SP500']),
-             '60/40 World / Govt bonds': {'WORLD': s(0.60, 'EQ', f(T['WORLD'])), 'GOV': s(0.40, 'BOND', f(T['GOV']))},
-             'Same weights, dividend ETF': ad.five_sleeves(T, W, f(T['DIV30']), T['SP500']),
-             'Same weights, equal-weight universe': ad.five_sleeves(T, W, ew, us)}
+             'B1 Policy twin': ad.five_sleeves(T, W, f(T['EZ_ETF']), T['SP500']),
+             'B2 60/40': {'WORLD': s(0.60, 'EQ', f(T['WORLD'])), 'GOV': s(0.40, 'BOND', f(T['GOV']))},
+             'B3 Dividend ETF': ad.five_sleeves(T, W, f(T['DIV30']), T['SP500']),
+             '1/N diagnostic': ad.five_sleeves(T, W, ew, us)}
     sims = {k: ad.run(D, sp, cfg) for k, sp in specs.items()}
     R = pd.DataFrame({k: v['ret'] for k, v in sims.items()}).dropna()
     return sims, R
@@ -115,7 +115,7 @@ def attribution(p_json):
     us = 'US_HEDGED' if p['hedge'] else T['US']
     tests = {'EZ: our rule': lambda t: SEL[t][0], 'EZ: EURO STOXX 50': f(T['EZ_ETF']),
              'EZ: Select Dividend 30': f(T['DIV30']),
-             'EZ: equal-weight universe': lambda t: dc.equal_weight_universe(t, D['close_raw'], D['meta']),
+             'EZ: 1/N universe': lambda t: dc.equal_weight_universe(t, D['close_raw'], D['meta']),
              'US: SPYD' + (' (hedged)' if p['hedge'] else ''): f(us), 'US: S&P 500': f(T['SP500'])}
     RS = pd.DataFrame({k: ad.run(D, {'X': ad.sleeve(1.0, 'EQ', fn)}, cfg)['ret'] for k, fn in tests.items()}).dropna()
     names = list(tests)
@@ -155,7 +155,7 @@ def line_chart(df, y_title, y_format='.2f', rule_at=None, height=380):
         color=alt.Color('Portfolio:N', scale=alt.Scale(domain=dom, range=[COLORS[k] for k in dom]),
                         legend=alt.Legend(orient='top', title=None)),
         strokeDash=alt.StrokeDash('Portfolio:N', scale=alt.Scale(
-            domain=dom, range=[[6, 3] if k == 'Base case' else [2, 2] if k == 'Same weights, equal-weight universe' else [1, 0]
+            domain=dom, range=[[6, 3] if k == 'Base case' else [2, 2] if k == '1/N diagnostic' else [1, 0]
                                for k in dom]), legend=None),
         strokeWidth=alt.condition(alt.datum.Portfolio == 'Your scenario', alt.value(3), alt.value(1.6)),
         tooltip=['Portfolio', alt.Tooltip('Date:T', format='%b %Y'), alt.Tooltip('Value:Q', format=y_format)])
@@ -242,7 +242,7 @@ def canonical(p):
 
 P_JSON, BASE_JSON = canonical(P), canonical(DEFAULTS)
 IS_BASE = P_JSON == BASE_JSON
-TWIN = 'Same weights, index funds'
+TWIN = 'B1 Policy twin'
 
 # ---------------------------------------------------------------------------------------------
 # Header
@@ -280,41 +280,60 @@ REL = pd.DataFrame({f'vs {b}': dc.relative_stats(R['Your scenario'], R_ALL[b], r
 tabs = st.tabs(['📈 Performance', '💶 Income & wealth', '🔎 Portfolio', 'ℹ️ About'])
 
 
+HEADLINE = ['Ann. average return', 'Volatility', 'Sharpe ratio', 'Beta', 'Alpha (ann.)', 'Information ratio']
+HEADLINE_PCT = {'Ann. average return', 'Volatility', 'Alpha (ann.)'}
+
+
+def headline(r, twin):
+    """The six measures the assignment requires; beta, alpha and IR vs. the portfolio's own B1 twin."""
+    return pd.concat([dc.standalone_stats(r, rf)[HEADLINE[:3]], dc.relative_stats(r, twin, rf)[HEADLINE[3:]]])
+
+
 def interpretation(a, b, rel):
-    """Two or three plain sentences from the six measures vs. the index-fund twin."""
-    d_cagr = a['CAGR'] - b['CAGR']
-    out = [f"Your scenario grew by **{a['CAGR']:.1%} a year**, "
-           f"{abs(d_cagr):.1%} {'more' if d_cagr >= 0 else 'less'} than the same weights in index funds "
-           f"({b['CAGR']:.1%})."]
-    d_vol, d_dd = a['Volatility'] - b['Volatility'], a['Max drawdown'] - b['Max drawdown']
-    out.append(f"It was {'less' if d_vol < 0 else 'more'} volatile ({a['Volatility']:.1%} vs {b['Volatility']:.1%}) "
-               f"and its deepest loss was {'smaller' if d_dd > 0 else 'larger'} "
-               f"({a['Max drawdown']:.1%} vs {b['Max drawdown']:.1%}).")
-    sharpe = 'higher' if a['Sharpe ratio'] > b['Sharpe ratio'] else 'lower'
+    """One plain reading of each of the six measures, vs. B1 Policy twin."""
+    more = 'more' if a['Sharpe ratio'] > b['Sharpe ratio'] else 'less'
     sig = 'statistically significant' if abs(rel['t(alpha)']) >= 2 else 'not statistically significant'
-    out.append(f"Return per unit of risk was {sharpe} (Sharpe {a['Sharpe ratio']:.2f} vs {b['Sharpe ratio']:.2f}); "
-               f"the alpha of {rel['Alpha (ann.)']:+.1%} a year is {sig} (t = {rel['t(alpha)']:.1f}).")
-    return ' '.join(out)
+    text = (f"Your scenario earned **{a['Ann. average return']:.1%} a year** on average (B1: {b['Ann. average return']:.1%}) "
+            f"with a volatility of {a['Volatility']:.1%} (B1: {b['Volatility']:.1%}); its Sharpe ratio of "
+            f"{a['Sharpe ratio']:.2f} (B1: {b['Sharpe ratio']:.2f}) means {more} excess return per unit of risk. "
+            f"A beta of {rel['Beta']:.2f} means it moved about {rel['Beta']:.2f}% for each 1% move of B1; beyond that "
+            f"exposure it earned an alpha of {rel['Alpha (ann.)']:+.1%} a year, which is {sig} (t = {rel['t(alpha)']:.1f}).")
+    if pd.notna(rel['Information ratio']):
+        text += (f" The information ratio of {rel['Information ratio']:.2f} relates the return difference to B1 "
+                 f"({a['Ann. average return'] - b['Ann. average return']:+.1%} a year) to how far the two drift apart "
+                 f"(tracking error {rel['Tracking error']:.1%}).")
+    return text
 
 
 # ---------------------------------------------------------------------------------------------
 # Tab 1: Performance
 # ---------------------------------------------------------------------------------------------
 with tabs[0]:
-    a, b = ABS['Your scenario'], ABS[TWIN]
-    key = pd.DataFrame({'Your scenario': a, TWIN: b, 'Difference vs index funds': a - b})
+    key = pd.DataFrame({'Your scenario': headline(R['Your scenario'], R[TWIN])})
     if not IS_BASE:
-        key.insert(1, 'Base case', ABS['Base case'])
-    st.subheader('Six measures vs. the same weights in index funds')
-    st.dataframe(fmt(key), width='stretch')
-    st.markdown(interpretation(a, b, REL[f'vs {TWIN}']))
+        key['Base case'] = headline(BR['Your scenario'], BR[TWIN])
+    key[TWIN] = pd.concat([ABS[TWIN][HEADLINE[:3]],
+                           pd.Series({'Beta': 1.0, 'Alpha (ann.)': 0.0, 'Information ratio': np.nan})])
+    shown = key.astype(object)
+    for r in key.index:
+        shown.loc[r] = ['–' if pd.isna(v) else f'{v:.2%}' if r in HEADLINE_PCT else f'{v:.2f}' for v in key.loc[r]]
+    st.subheader('Performance vs. B1 Policy twin (main benchmark)')
+    st.dataframe(shown, width='stretch')
+    st.caption('Monthly data, annualised. Beta, alpha and information ratio are measured against each portfolio\'s '
+               'B1 Policy twin; beta is not annualised.')
+    st.markdown(interpretation(ABS['Your scenario'], ABS[TWIN], REL[f'vs {TWIN}']))
 
     st.subheader(f"Cumulative total return, net of costs (start = 1), {(ad.START + 1).strftime('%b %Y')} – {ad.END.strftime('%b %Y')}")
     show = st.multiselect('Portfolios', list(R_ALL.columns), default=list(R_ALL.columns), label_visibility='collapsed')
     if show:
         st.altair_chart(line_chart(cum_frame(R_ALL, show), 'Growth of 1', rule_at=1.0), width='stretch')
-    st.caption('All portfolios use the same rebalancing, payout rule and cost model as your scenario. '
-               'The "Same weights" benchmarks replace only the stock sleeves.')
+    st.caption('**B1 Policy twin** (main benchmark): your weights, with index funds (EURO STOXX 50, S&P 500) in the '
+               'stock sleeves.  \n'
+               '**B2 60/40**: 60% MSCI World, 40% euro government bonds.  \n'
+               '**B3 Dividend ETF**: B1 with the EURO STOXX Select Dividend 30 as the Eurozone sleeve.  \n'
+               '**1/N diagnostic**: your portfolio with every universe stock equally weighted in the Eurozone sleeve '
+               'instead of our rule; shows how much comes from the universe (survivorship bias).  \n'
+               'All use the same rebalancing, payout rule and cost model as your scenario.')
 
     with st.expander('Show all measures'):
         st.markdown('**Absolute measures** (monthly data, annualised)')
@@ -324,7 +343,7 @@ with tabs[0]:
         st.markdown('**Drawdowns**')
         dd = pd.concat([pd.DataFrame({'Date': R_ALL.index.to_timestamp(), 'Portfolio': k,
                                       'Value': ((1 + R_ALL[k]).cumprod() / (1 + R_ALL[k]).cumprod().cummax() - 1).values})
-                        for k in R_ALL if k != 'Same weights, equal-weight universe'])
+                        for k in R_ALL if k != '1/N diagnostic'])
         st.altair_chart(line_chart(dd, 'Drawdown', '.0%', height=280), width='stretch')
         st.markdown("""
 - **Data:** monthly total returns in EUR, net of trading costs and taxes. Risk-free rate: euro area 3-month rate (FRED).
@@ -345,7 +364,7 @@ with tabs[1]:
     who = {'Your scenario': SIMS['Your scenario']}
     if not IS_BASE:
         who['Base case'] = BSIMS['Your scenario']
-    who.update({k: SIMS[k] for k in [TWIN, '60/40 World / Govt bonds', 'Same weights, dividend ETF']})
+    who.update({k: SIMS[k] for k in [TWIN, 'B2 60/40', 'B3 Dividend ETF']})
     CLIENT, PAID, REAL = {}, {}, {}
     for k, sim in who.items():
         CLIENT[k], inc_k, REAL[k] = dc.client_stats(sim, cpi, ad.W0)
@@ -379,7 +398,7 @@ with tabs[1]:
     c1, c2 = st.columns(2)
     with c1:
         st.markdown(f'**Paid out to the family per year** (EUR, on €{w0 / 1e6:,.0f} m)')
-        ib = inc[[k for k in inc if k != '60/40 World / Govt bonds']].reset_index(names='Year').melt('Year', var_name='Portfolio', value_name='EUR')
+        ib = inc[[k for k in inc if k != 'B2 60/40']].reset_index(names='Year').melt('Year', var_name='Portfolio', value_name='EUR')
         dom = [k for k in COLORS if k in ib['Portfolio'].unique()]
         st.altair_chart(alt.Chart(ib).mark_bar().encode(
             x=alt.X('Year:O', title=None), xOffset='Portfolio:N', y=alt.Y('EUR:Q', axis=alt.Axis(format=',.0f')),
@@ -390,9 +409,9 @@ with tabs[1]:
     with c2:
         st.markdown('**Real wealth after payouts** (start = 1, deflated by euro area HICP)')
         rw = pd.concat([pd.DataFrame({'Date': s.index.to_timestamp(), 'Portfolio': k, 'Value': s.values / ad.W0})
-                        for k, s in REAL.items() if k != '60/40 World / Govt bonds'])
+                        for k, s in REAL.items() if k != 'B2 60/40'])
         st.altair_chart(line_chart(rw, 'Real wealth', rule_at=1.0, height=330), width='stretch')
-    st.caption('The 60/40 benchmark holds an accumulating MSCI World ETF and pays out only bond coupons, so it is '
+    st.caption('B2 60/40 holds an accumulating MSCI World ETF and pays out only bond coupons, so it is '
                'left out of the charts.')
 
     with st.expander('Stress years and calendar-year returns'):
@@ -495,7 +514,7 @@ with tabs[2]:
     with st.expander('Show all measures'):
         st.dataframe(fmt(ATT), width='stretch')
         st.caption('CAGR, Volatility and Sharpe ratio are those of the tested sleeve; Benchmark CAGR is the alternative\'s.')
-    st.caption('If our rule beats the EURO STOXX 50 and Select Dividend 30 but not the equal-weight universe, '
+    st.caption('If our rule beats the EURO STOXX 50 and Select Dividend 30 but not the 1/N universe, '
                'the edge may come from survivorship bias in today\'s constituent list rather than from the rule.')
 
 # ---------------------------------------------------------------------------------------------
@@ -506,12 +525,6 @@ with tabs[3]:
 **Strategy.** 30% Eurozone dividend stocks selected by our rule, 30% US dividend aristocrats (SPYD), 20% euro
 government bonds, 15% euro corporate bonds and 5% gold. Reset to target every December; band checks at the other
 quarter-ends. All income is paid out to the family; capital is never sold to fund spending.
-
-**Benchmarks.** *Same weights, index funds*: your weights with the EURO STOXX 50 and S&P 500 in the stock sleeves.
-*Same weights, dividend ETF*: the same with the Select Dividend 30 for Eurozone stocks.
-*Same weights, equal-weight universe*: your portfolio with every stock in our universe equally weighted in the
-Eurozone sleeve instead of our rule; US, bonds and gold unchanged (measures survivorship bias).
-*60/40 World / Govt bonds*: 60% MSCI World, 40% euro government bonds.
 """)
 
     st.subheader('Planning assumptions')
@@ -543,7 +556,7 @@ is copied from the notebook in `app_data.py`. With every setting on the base cas
 notebook's numbers.
 
 **Limitations.**
-- *Survivorship bias:* the universe is today's constituents; the equal-weight universe benchmark measures this.
+- *Survivorship bias:* the universe is today's constituents; the 1/N diagnostic measures this.
 - *Concentration:* 20 stocks with sector and country caps; financials and utilities dominate high-yield lists.
 - *Look-ahead bias:* each selection uses only data up to its date, which the code checks.
 - *Data:* Yahoo dividend histories can contain gaps or special dividends.

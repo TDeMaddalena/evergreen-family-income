@@ -33,7 +33,13 @@ All market data is downloaded at run time through APIs: Yahoo Finance via `yfina
 
 **Adjustable assumptions:** allocation (equity share 40–80% or custom weights), US currency hedge, the Eurozone stock rule (dividend record: base case / strict / lenient, number of stocks, sector and country caps, loser filter, holdings buffer), rebalancing bands, trading costs, and the payout rule (all income or smoothed).
 
-**Tabs:** Backtest (cumulative performance vs. B1–B3 and 1/N, return, volatility, Sharpe, alpha, beta, information ratio) · Income & wealth · Stock selection · Attribution · Planner · About.
+**Tabs:**
+- **Performance:** annualised average return, volatility, Sharpe ratio, beta, alpha and information ratio vs. B1 Policy twin, with a short interpretation; cumulative performance vs. B1–B3 and the 1/N diagnostic (start = 1); all measures and drawdowns on request.
+- **Income & wealth:** what the family is paid each year, real wealth after payouts, stress years and calendar-year returns.
+- **Portfolio:** the yearly Eurozone stock selection and the sleeve attribution (our rule vs. EURO STOXX 50, Select Dividend 30 and 1/N universe; SPYD vs. S&P 500).
+- **About:** strategy, planning assumptions, data and limitations.
+
+The app uses the same portfolio names as the notebook (B1 Policy twin, B2 60/40, B3 Dividend ETF, 1/N diagnostic).
 
 **Consistency with the notebook.** All calculations use `evergreen_core.py`, the same module the notebook writes in section 1. `app_data.py` copies the notebook's parameters, data preparation and portfolio set-up (sections 2–7; each part names its notebook cell). With all settings on the base case, the app reproduces the notebook's monthly returns and performance tables exactly. **`evergreen_core.py` must stay identical to the code in section 1 of the notebook, and `app_data.py` must follow sections 2–7. If you change one, change the other.**
 
