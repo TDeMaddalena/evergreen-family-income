@@ -12,6 +12,8 @@ A rules-based multi-asset income portfolio for a European single-family office: 
 | `notebook/Evergreen_backtest.ipynb` | Full backtest; reproduces every number, table and figure in the prospectus |
 | `evergreen_core.py` | Core functions (selection rule, simulation, performance measures), shared by the notebook and the app |
 | `data/universe_msci_emu.csv` | Stock universe: MSCI EMU constituents mapped to Yahoo Finance tickers |
+| `streamlit_app.py` | Streamlit app: change the strategy's assumptions and compare with the base case and benchmarks |
+| `app_data.py` | Data preparation and portfolio set-up for the app, copied from notebook sections 2–7 |
 | `requirements.txt` | Python dependencies (notebook and app) |
 
 ## Run the notebook
@@ -27,9 +29,26 @@ All market data is downloaded at run time through APIs: Yahoo Finance via `yfina
 
 ## App
 
-The Streamlit app goes in `streamlit_app.py` at the repository root and imports `evergreen_core.py`, so the app and the notebook compute identical numbers. **`evergreen_core.py` must stay identical to the code written in section 1 of the notebook. If you change one, change the other.**
+`streamlit_app.py` lets the user change the strategy's assumptions and immediately see the backtest, the benchmark comparison and all performance measures. Every setting starts at the **base case** of the prospectus, and *Reset to base case* restores it.
 
-Deploy on Streamlit Community Cloud: *New app* → this repository → branch `main` → main file `streamlit_app.py`.
+**Adjustable assumptions:** allocation (equity share 40–80% or custom weights), US currency hedge, the Eurozone stock rule (dividend record: base case / strict / lenient, number of stocks, sector and country caps, loser filter, holdings buffer), rebalancing bands, trading costs, and the payout rule (all income or smoothed).
+
+**Tabs:** Backtest (cumulative performance vs. B1–B3 and 1/N, return, volatility, Sharpe, alpha, beta, information ratio) · Income & wealth · Stock selection · Attribution · Planner · About.
+
+**Consistency with the notebook.** All calculations use `evergreen_core.py`, the same module the notebook writes in section 1. `app_data.py` copies the notebook's parameters, data preparation and portfolio set-up (sections 2–7; each part names its notebook cell). With all settings on the base case, the app reproduces the notebook's monthly returns and performance tables exactly. **`evergreen_core.py` must stay identical to the code in section 1 of the notebook, and `app_data.py` must follow sections 2–7. If you change one, change the other.**
+
+### Run the app locally
+
+```bash
+pip install -r requirements.txt
+streamlit run streamlit_app.py
+```
+
+The first start downloads all market data from Yahoo Finance and FRED (about a minute) and stores it in `evergreen_cache/`; after that each new scenario takes about 10 seconds.
+
+### Deploy
+
+Streamlit Community Cloud: *Create app* → this repository → branch `main` → main file `streamlit_app.py`.
 
 ## Group BE
 
